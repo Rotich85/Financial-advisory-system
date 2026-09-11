@@ -1,1 +1,1080 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<title>Daily Money Advisor</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f3f7f6;
+    color: #17312f;
+}
+
+header {
+    background: #0f766e;
+    color: white;
+    padding: 18px 15px;
+    text-align: center;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 24px;
+}
+
+header p {
+    margin: 6px 0 0;
+    font-size: 13px;
+}
+
+.container {
+    max-width: 850px;
+    margin: auto;
+    padding: 15px;
+}
+
+.card {
+    background: white;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 14px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.dashboard {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.box {
+    background: white;
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+}
+
+.label {
+    font-size: 13px;
+    color: #64748b;
+}
+
+.amount {
+    font-size: 20px;
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+.income {
+    color: #16803c;
+}
+
+.expense {
+    color: #c0392b;
+}
+
+.balance {
+    color: #0f766e;
+}
+
+h2, h3 {
+    margin-top: 0;
+}
+
+label {
+    display: block;
+    margin-top: 10px;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+input, select, button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 5px;
+    border-radius: 8px;
+    border: 1px solid #ccd8d5;
+    font-size: 15px;
+}
+
+button {
+    background: #0f766e;
+    color: white;
+    border: none;
+    font-weight: bold;
+    margin-top: 12px;
+}
+
+button.delete {
+    background: #b42318;
+}
+
+button.export {
+    background: #475569;
+}
+
+.row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.advice {
+    padding: 14px;
+    background: #ecfdf5;
+    border-left: 5px solid #0f766e;
+    border-radius: 8px;
+    line-height: 1.6;
+}
+
+.warning {
+    background: #fff7ed;
+    border-left-color: #ea580c;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+th, td {
+    padding: 8px;
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+}
+
+th {
+    background: #f1f5f9;
+}
+
+.table-container {
+    overflow-x: auto;
+}
+
+@media(max-width:600px) {
+    .row {
+        grid-template-columns: 1fr;
+    }
+
+    table {
+        font-size: 11px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>💰 Daily Money Advisor</h1>
+    <p>Earn • Spend Wisely • Save • Invest</p>
+</header>
+
+<div class="container">
+
+<!-- DASHBOARD -->
+
+<div class="dashboard">
+
+<div class="box">
+    <div class="label">Today's Income</div>
+    <div id="todayIncome" class="amount income">KSh 0</div>
+</div>
+
+<div class="box">
+    <div class="label">Today's Expenses</div>
+    <div id="todayExpense" class="amount expense">KSh 0</div>
+</div>
+
+<div class="box">
+    <div class="label">Today's Balance</div>
+    <div id="todayBalance" class="amount balance">KSh 0</div>
+</div>
+
+<div class="box">
+    <div class="label">Savings</div>
+    <div id="savings" class="amount">KSh 0</div>
+</div>
+
+</div>
+
+<br>
+
+<!-- ADVISORY -->
+
+<div class="card">
+
+<h3>💡 Today's Financial Advice</h3>
+
+<div id="advice" class="advice">
+Record your income and expenses to receive advice.
+</div>
+
+</div>
+
+<!-- ADD TRANSACTION -->
+
+<div class="card">
+
+<h3>➕ Add Transaction</h3>
+
+<form id="moneyForm">
+
+<label>Date</label>
+<input type="date" id="date" required>
+
+<label>Type</label>
+
+<select id="type">
+<option value="income">Income</option>
+<option value="expense">Expense</option>
+</select>
+
+<label>Amount (KSh)</label>
+
+<input
+type="number"
+id="amount"
+placeholder="Enter amount"
+min="0"
+required
+>
+
+<label>Category</label>
+
+<select id="category"></select>
+
+<label>Description</label>
+
+<input
+type="text"
+id="description"
+placeholder="Example: Shop sales, food, fuel"
+>
+
+<button type="submit">
+Save Transaction
+</button>
+
+</form>
+
+</div>
+
+<!-- MONEY RULES -->
+
+<div class="card">
+
+<h3>🎯 Money Rules</h3>
+
+<label>Monthly Savings Target</label>
+
+<input
+type="number"
+id="target"
+value="10000"
+>
+
+<label>Maximum Daily Spending</label>
+
+<input
+type="number"
+id="limit"
+value="1500"
+>
+
+<button onclick="saveRules()">
+Save Money Rules
+</button>
+
+</div>
+
+<!-- MONTH SUMMARY -->
+
+<div class="card">
+
+<h3>📊 This Month</h3>
+
+<div class="dashboard">
+
+<div>
+<div class="label">Income</div>
+<div id="monthIncome" class="amount income">
+KSh 0
+</div>
+</div>
+
+<div>
+<div class="label">Expenses</div>
+<div id="monthExpense" class="amount expense">
+KSh 0
+</div>
+</div>
+
+<div>
+<div class="label">Net Balance</div>
+<div id="monthNet" class="amount balance">
+KSh 0
+</div>
+</div>
+
+<div>
+<div class="label">Savings Progress</div>
+<div id="progress" class="amount">
+0%
+</div>
+</div>
+
+</div>
+
+</div>
+
+<!-- TRANSACTIONS -->
+
+<div class="card">
+
+<h3>📜 Transaction Records</h3>
+
+<div class="table-container">
+
+<table>
+
+<thead>
+
+<tr>
+<th>Date</th>
+<th>Type</th>
+<th>Amount</th>
+<th>Category</th>
+<th>Description</th>
+<th>Action</th>
+</tr>
+
+</thead>
+
+<tbody id="records"></tbody>
+
+</table>
+
+</div>
+
+<button class="export" onclick="exportCSV()">
+📥 Export Records
+</button>
+
+<button class="delete" onclick="deleteAll()">
+🗑️ Delete All Records
+</button>
+
+</div>
+
+</div>
+
+
+<script>
+
+/* =========================
+   DATA STORAGE
+========================= */
+
+let data = JSON.parse(
+localStorage.getItem("moneyAdvisor")
+) || {
+
+transactions: [],
+
+target: 10000,
+
+limit: 1500
+
+};
+
+
+/* =========================
+   HELPERS
+========================= */
+
+function money(number) {
+
+return "KSh " +
+Number(number || 0)
+.toLocaleString("en-KE", {
+minimumFractionDigits: 0,
+maximumFractionDigits: 2
+});
+
+}
+
+
+function today() {
+
+return new Date()
+.toISOString()
+.slice(0,10);
+
+}
+
+
+/* =========================
+   INITIAL SETTINGS
+========================= */
+
+document.getElementById("date").value = today();
+
+document.getElementById("target").value =
+data.target;
+
+document.getElementById("limit").value =
+data.limit;
+
+
+/* =========================
+   CATEGORIES
+========================= */
+
+function loadCategories() {
+
+let type =
+document.getElementById("type").value;
+
+let categories;
+
+if(type === "income") {
+
+categories = [
+
+"Salary",
+
+"Business Sales",
+
+"Poultry/Chicks",
+
+"Farming",
+
+"Commission",
+
+"Other Income"
+
+];
+
+} else {
+
+categories = [
+
+"Food",
+
+"Transport/Fuel",
+
+"Airtime/Data",
+
+"Household",
+
+"School",
+
+"Loan Repayment",
+
+"Business",
+
+"Poultry/Feeds",
+
+"Church/Community",
+
+"Entertainment",
+
+"Other Expense"
+
+];
+
+}
+
+let select =
+document.getElementById("category");
+
+select.innerHTML = "";
+
+categories.forEach(function(category) {
+
+let option =
+document.createElement("option");
+
+option.value = category;
+
+option.textContent = category;
+
+select.appendChild(option);
+
+});
+
+}
+
+loadCategories();
+
+document.getElementById("type")
+.addEventListener("change", loadCategories);
+
+
+/* =========================
+   SAVE TRANSACTION
+========================= */
+
+document.getElementById("moneyForm")
+.addEventListener("submit", function(event) {
+
+event.preventDefault();
+
+let transaction = {
+
+id: Date.now(),
+
+date:
+document.getElementById("date").value,
+
+type:
+document.getElementById("type").value,
+
+amount:
+Number(document.getElementById("amount").value),
+
+category:
+document.getElementById("category").value,
+
+description:
+document.getElementById("description").value
+
+};
+
+data.transactions.push(transaction);
+
+saveData();
+
+this.reset();
+
+document.getElementById("date").value = today();
+
+loadCategories();
+
+render();
+
+alert("Transaction saved successfully!");
+
+});
+
+
+/* =========================
+   SAVE DATA
+========================= */
+
+function saveData() {
+
+localStorage.setItem(
+"moneyAdvisor",
+JSON.stringify(data)
+);
+
+}
+
+
+/* =========================
+   CALCULATE TOTALS
+========================= */
+
+function calculateTotals(filter) {
+
+let transactions =
+data.transactions.filter(filter);
+
+let income = 0;
+
+let expense = 0;
+
+transactions.forEach(function(item) {
+
+if(item.type === "income") {
+
+income += item.amount;
+
+}
+
+if(item.type === "expense") {
+
+expense += item.amount;
+
+}
+
+});
+
+return {
+income,
+expense
+};
+
+}
+
+
+/* =========================
+   DISPLAY SYSTEM
+========================= */
+
+function render() {
+
+let currentDate = today();
+
+let currentMonth =
+currentDate.slice(0,7);
+
+
+/* TODAY */
+
+let todayTotals =
+calculateTotals(function(item) {
+
+return item.date === currentDate;
+
+});
+
+document.getElementById("todayIncome")
+.textContent =
+money(todayTotals.income);
+
+document.getElementById("todayExpense")
+.textContent =
+money(todayTotals.expense);
+
+document.getElementById("todayBalance")
+.textContent =
+money(
+todayTotals.income -
+todayTotals.expense
+);
+
+
+/* MONTH */
+
+let monthTotals =
+calculateTotals(function(item) {
+
+return item.date.startsWith(
+currentMonth
+);
+
+});
+
+document.getElementById("monthIncome")
+.textContent =
+money(monthTotals.income);
+
+document.getElementById("monthExpense")
+.textContent =
+money(monthTotals.expense);
+
+let net =
+monthTotals.income -
+monthTotals.expense;
+
+document.getElementById("monthNet")
+.textContent =
+money(net);
+
+
+/* SAVINGS */
+
+let savings =
+data.transactions
+
+.filter(function(item) {
+
+return item.category === "Savings";
+
+})
+
+.reduce(function(total,item) {
+
+return total + item.amount;
+
+},0);
+
+document.getElementById("savings")
+.textContent =
+money(savings);
+
+
+/* SAVINGS PROGRESS */
+
+let target =
+Number(data.target);
+
+let percentage = 0;
+
+if(target > 0) {
+
+percentage =
+Math.round(
+Math.max(0,net) /
+target *
+100
+);
+
+if(percentage > 100) {
+
+percentage = 100;
+
+}
+
+}
+
+document.getElementById("progress")
+.textContent =
+percentage + "%";
+
+
+/* ADVICE */
+
+generateAdvice(
+todayTotals.income,
+todayTotals.expense
+);
+
+
+/* RECORDS */
+
+displayRecords();
+
+}
+
+
+/* =========================
+   FINANCIAL ADVICE
+========================= */
+
+function generateAdvice(income, expense) {
+
+let advice =
+document.getElementById("advice");
+
+if(income === 0 && expense === 0) {
+
+advice.innerHTML =
+"💡 Start by recording your income and spending today.";
+
+return;
+
+}
+
+let limit =
+Number(data.limit);
+
+if(
+limit > 0 &&
+expense > limit
+) {
+
+advice.className =
+"advice warning";
+
+advice.innerHTML =
+
+"⚠️ <b>Overspending Alert!</b><br>" +
+
+"You have spent " +
+money(expense) +
+
+" today, which is above your daily limit of " +
+
+money(limit) +
+
+".<br><br>" +
+
+"Try to avoid non-essential spending.";
+
+return;
+
+}
+
+advice.className =
+"advice";
+
+if(income > 0) {
+
+let save =
+income * 0.20;
+
+let invest =
+income * 0.15;
+
+let remaining =
+Math.max(
+0,
+income -
+expense -
+save -
+invest
+);
+
+advice.innerHTML =
+
+"✅ <b>Today's recommendation:</b><br><br>" +
+
+"💰 Save 20%: <b>" +
+money(save) +
+"</b><br>" +
+
+"📈 Invest/reinvest 15%: <b>" +
+money(invest) +
+"</b><br>" +
+
+"💵 Available after today's spending: <b>" +
+money(remaining) +
+"</b><br><br>" +
+
+"💡 Aim to keep unnecessary expenses below 50% of your income.";
+
+} else {
+
+advice.innerHTML =
+
+"💡 No income recorded today. " +
+
+"Keep spending limited to essential needs.";
+
+}
+
+}
+
+
+/* =========================
+   DISPLAY RECORDS
+========================= */
+
+function displayRecords() {
+
+let table =
+document.getElementById("records");
+
+table.innerHTML = "";
+
+let records =
+[...data.transactions]
+.reverse();
+
+if(records.length === 0) {
+
+table.innerHTML =
+"<tr><td colspan='6'>No records yet.</td></tr>";
+
+return;
+
+}
+
+records.forEach(function(item) {
+
+let row =
+document.createElement("tr");
+
+row.innerHTML =
+
+"<td>" +
+item.date +
+"</td>" +
+
+"<td>" +
+item.type +
+"</td>" +
+
+"<td>" +
+money(item.amount) +
+"</td>" +
+
+"<td>" +
+item.category +
+"</td>" +
+
+"<td>" +
+(item.description || "") +
+"</td>" +
+
+"<td>" +
+
+"<button onclick=\"deleteTransaction('" +
+item.id +
+"')\">" +
+
+"Delete" +
+
+"</button>" +
+
+"</td>";
+
+table.appendChild(row);
+
+});
+
+}
+
+
+/* =========================
+   DELETE ONE
+========================= */
+
+function deleteTransaction(id) {
+
+if(!confirm("Delete this transaction?")) {
+
+return;
+
+}
+
+data.transactions =
+data.transactions.filter(function(item) {
+
+return String(item.id) !== String(id);
+
+});
+
+saveData();
+
+render();
+
+}
+
+
+/* =========================
+   DELETE ALL
+========================= */
+
+function deleteAll() {
+
+if(
+confirm(
+"Are you sure you want to delete ALL records?"
+)
+) {
+
+data.transactions = [];
+
+saveData();
+
+render();
+
+}
+
+}
+
+
+/* =========================
+   SAVE RULES
+========================= */
+
+function saveRules() {
+
+data.target =
+Number(
+document.getElementById("target").value
+);
+
+data.limit =
+Number(
+document.getElementById("limit").value
+);
+
+saveData();
+
+render();
+
+alert(
+"Your money rules have been saved."
+);
+
+}
+
+
+/* =========================
+   EXPORT CSV
+========================= */
+
+function exportCSV() {
+
+let rows = [
+
+[
+"Date",
+"Type",
+"Amount",
+"Category",
+"Description"
+]
+
+];
+
+data.transactions.forEach(function(item) {
+
+rows.push([
+
+item.date,
+
+item.type,
+
+item.amount,
+
+item.category,
+
+item.description
+
+]);
+
+});
+
+
+let csv =
+rows.map(function(row) {
+
+return row.map(function(value) {
+
+return '"' +
+String(value || "")
+.replaceAll('"','""') +
+'"';
+
+}).join(",");
+
+}).join("\n");
+
+
+let file =
+new Blob(
+[csv],
+{type:"text/csv"}
+);
+
+
+let link =
+document.createElement("a");
+
+link.href =
+URL.createObjectURL(file);
+
+link.download =
+"money-records.csv";
+
+link.click();
+
+}
+
+
+/* =========================
+   START SYSTEM
+========================= */
+
+render();
+
+</script>
+
+</body>
+</html>
